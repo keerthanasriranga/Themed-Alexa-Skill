@@ -156,7 +156,10 @@ def check_this_word(intent, session):
             speech_output = speech_output + "Incorrect. Game ended witha score" + str(len(memoryList)) + ". "
             should_end_session = True
         if(checkQueue.empty()):
-            speech_output = speech_output + "You have said all the words correctly"
+            speech_output = speech_output + "You have said all the words correctly."
+            qst_no = random.randint(0,len(memoryList)-1)
+            if(qst_no%4==0):
+                speech_output = speech_output + countryDetails[memoryList[qst_no]]
             for element in memoryList:
                 checkQueue.put(element)
     else:
