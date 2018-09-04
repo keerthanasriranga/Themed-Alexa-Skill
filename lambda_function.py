@@ -14,6 +14,7 @@ import Queue
 
 memoryList = []
 checkQueue = Queue.Queue(maxsize=20)
+flag = 0
 
 countryDetails = {
     "Delhi" : "Capital of India.",
@@ -78,7 +79,7 @@ def get_welcome_response():
     reprompt_text = ""
     should_end_session = False
     memoryList = []
-   
+    flag = 1
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
@@ -137,6 +138,14 @@ def get_list_prompt(intent, session):
     return build_response(session_attributes, build_speechlet_response(
         intent['name'], speech_output, reprompt_text, should_end_session))
         
+def check_answer(intent, session):
+    session_attributes = {}
+    reprompt_text = None
+    speech_output = "Correct Answer"
+    should_end_session = False
+    return build_response(session_attributes, build_speechlet_response(
+        intent['name'], speech_output, reprompt_text, should_end_session))
+        
 def check_this_word(intent, session):
     session_attributes = {}
     reprompt_text = None
@@ -144,7 +153,7 @@ def check_this_word(intent, session):
     should_end_session = False
     card_title = intent['name']
     if(checkQueue.empty()):
-        speech_output = speech_output + "You have said all the words correctly"
+        speech_output = speech_output + "You have already said all the words correctly"
         for element in memoryList:
             checkQueue.put(element)
     elif 'Word' in intent['slots']:
@@ -158,8 +167,8 @@ def check_this_word(intent, session):
         if(checkQueue.empty()):
             speech_output = speech_output + "You have said all the words correctly."
             qst_no = random.randint(0,len(memoryList)-1)
-            if(qst_no%4==0):
-                speech_output = speech_output + countryDetails[memoryList[qst_no]]
+            if(qst_no%1==0):
+                speech_output = speech_output +  countryDetails[memoryList[qst_no]]
             for element in memoryList:
                 checkQueue.put(element)
     else:
@@ -201,6 +210,8 @@ def on_intent(intent_request, session):
         return set_color_in_session(intent, session)
     elif intent_name == "TheListIsIntent":
         return get_list_prompt(intent, session)
+    elif intent_name == "MyAnswerIsIntent":
+        return check_answer(intent, session)
     elif intent_name == "WordFromMemoryIntent":
         return check_this_word(intent, session)
     elif intent_name == "AMAZON.HelpIntent":
