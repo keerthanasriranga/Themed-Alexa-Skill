@@ -145,7 +145,7 @@ def check_this_word(intent, session):
         if(current_word == correct_word):
             speech_output = speech_output + "Correct, Go on. "
         else:
-            speech_output = speech_output + "Incorrect. Game ended"
+            speech_output = speech_output + "Incorrect. Game ended witha score" + str(len(memoryList)) + ". "
             should_end_session = True
         if(checkQueue.empty()):
             speech_output = speech_output + "You have said all the words correctly"
