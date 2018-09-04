@@ -15,6 +15,13 @@ import Queue
 memoryList = []
 checkQueue = Queue.Queue(maxsize=20)
 
+countryDetails = {
+    "Delhi" : "Capital of India.",
+    "Mumbai" : "Film Capital of India.",
+    "Bangalore" : "Capital of karnataka.",
+    "Mysore" : "Palace capital of Karnataka.",
+    "Chennai" : "Capital of Tamil Nadu."
+}
 
 
 countryList = [
@@ -111,7 +118,8 @@ def set_color_in_session(intent, session):
         for element in memoryList:
             speech_output = speech_output + element + ","
         alexa_word = countryList[random.randint(0,len(countryList)-1)]
-        speech_output = speech_output + " and " + alexa_word
+        speech_output = speech_output + " and " + alexa_word +"."
+        speech_output = speech_output + countryDetails[alexa_word]
         memoryList.append(alexa_word)
         checkQueue.put(alexa_word)
         reprompt_text = None
