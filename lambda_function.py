@@ -23,15 +23,15 @@ countryDetails = {
     "Delhi"     : "The national capital of our country was, originally, a walled city! This city had 14 gates of which only 5 are remaining namely Turkman Gate, Ajmeri Gate, Delhi Gate, Lahori Gate, and Kashmiri Gate." +
                   "It is the world's second most bird-rich capital city after Nairobi in Kenya.",
     "Mumbai" : "This city was given away by the Portuguese to England when King Charles II of England married Princess Catherine de Braganza of Portugal.", 
-    "Bangalore" : "This city, which is also known as the city of pearls, is home to the world famous Biriyani, world's biggest monolithic Buddha statue, film studio and snow themed park, and the rarest of rare - Kohinoor diamond!" + 
+    "Hyderabad" : "This city, which is also known as the city of pearls, is home to the world famous Biriyani, world's biggest monolithic Buddha statue, film studio and snow themed park, and the rarest of rare - Kohinoor diamond!" + 
                   " It is considered as one of the oldest rock formations on the planet, around 2500 million years old, and boasts of an opulent heritage. The last Nizam of Hyderabad is considered to be the all time richest Indian; he had a diamond paperweight worth 50 million pounds!! " ,
     "Mysore"    : "Palace capital of Karnataka. ",
+    "Bangalore" : "IT Capital of India. ",
     "Ahmedabad" : "Gets its name from Ahmedshah Badshah who ruled the city in the 14th Century. Has been ruled by  Mughals, Marathas and  British empire before Independence. ",
     "Kolkota"   : "It was this city which was India's capital till 1912!? This city is one of the few rail tram cities in the world. " + 
                   "It is also a heaven for bookworms with this city's book fair being recognised as one of the world's largest conglomeration of books and is also the most-attended book fair in the world! ",
     "Pune"      : "Pune lies in earthquake prone region. Renowned for its educational institutes, it is called Oxford Of The East. " + 
-                  " It was once the base of the Peshwas (prime ministers) of the Maratha Empire, which lasted from 1674 to 1818. It's known for the grand Aga Khan Palace, built in 1892 and now a memorial to Mahatma Gandhi, whose ashes are preserved in the garden. " +
-                  "The 8th-century Pataleshwar Cave Temple is dedicated to the Hindu god Shiva. ",
+                  " It was once the base of the Peshwas (prime ministers) of the Maratha Empire, which lasted from 1674 to 1818. ",
     "Chennai" : "Capital of Tamil Nadu. "
 }
 
@@ -39,8 +39,9 @@ countryDetails = {
 countryList = [
     "Delhi",
     "Mumbai",
-    "Bangalore",
+    "Hyderabad",
     "Mysore",
+    "Bangalore",
     "Ahmedabad",
     "Kolkata",
     "Pune",
@@ -138,7 +139,8 @@ def set_color_in_session(intent, session):
             if alexa_word not in memoryList :
                 break
         speech_output = speech_output + " and " + alexa_word +". Fact about this city : "
-        speech_output = speech_output + countryDetails[alexa_word]
+        speech_output = speech_output + countryDetails[alexa_word] 
+        speech_output = speech_output + "Now repeat the list of words. "
         memoryList.append(alexa_word)
         checkQueue.put(alexa_word)
         reprompt_text = None
