@@ -15,14 +15,16 @@ import Queue
 memoryList = []
 checkQueue = Queue.Queue(maxsize=20)
 flag = 0
-answerQueue = Queue.Queue(maxsize=20)
+answerQueue = Queue.Queue(maxsize=2)
+scoreQueue = Queue.Queue(maxsize=2)
+
 
 countryDetails = {
-    "Delhi" : "Capital of India.",
-    "Mumbai" : "Film Capital of India.",
-    "Bangalore" : "Capital of karnataka.",
-    "Mysore" : "Palace capital of Karnataka.",
-    "Chennai" : "Capital of Tamil Nadu."
+    "Delhi" : "Capital of India. ",
+    "Mumbai" : "Film Capital of India. ",
+    "Bangalore" : "Capital of karnataka. ",
+    "Mysore" : "Palace capital of Karnataka. ",
+    "Chennai" : "Capital of Tamil Nadu. "
 }
 
 
@@ -31,7 +33,7 @@ countryList = [
     "Mumbai",
     "Bangalore",
     "Mysore",
-    "Chennai"
+    "chennai"
 ]
 
 # --------------- Helpers that build all of the responses ----------------------
@@ -74,13 +76,14 @@ def get_welcome_response():
    
     session_attributes = {}
     card_title = "Welcome"
-    speech_output = "Welcome to the Alexa Memory Game. " 
+    speech_output = "Welcome to the Alexa Memory Game. Begin the game by saying My word is and an Indian city name. For example, my word is Bangalore. " 
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
     reprompt_text = ""
     should_end_session = False
     memoryList = []
     flag = 1
+    scoreQueue.put(0)
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
@@ -119,7 +122,10 @@ def set_color_in_session(intent, session):
                         "The list of words are "
         for element in memoryList:
             speech_output = speech_output + element + ","
-        alexa_word = countryList[random.randint(0,len(countryList)-1)]
+        while True : 
+            alexa_word = countryList[random.randint(0,len(countryList)-1)]
+            if alexa_word not in memoryList :
+                break
         speech_output = speech_output + " and " + alexa_word +". Fact about this city : "
         speech_output = speech_output + countryDetails[alexa_word]
         memoryList.append(alexa_word)
@@ -147,7 +153,12 @@ def check_answer(intent, session):
     if 'Word' in intent['slots']:
         players_answer = intent['slots']['Word']['value']
         if(players_answer==answer):
-            speech_output = speech_output + "That's the right answer!"
+            speech_output = speech_output + "That's the right answer! "
+            scoreNow = scoreQueue.get()
+            scoreNow = scoreNow + 10
+            scoreQueue.put(scoreNow)
+            speech_output = speech_output + "Congrats! You have earned 10 bonus points. Your score is now " + str(scoreNow) + " . "
+            speech_output = speech_output + "Now, tell your word. "
         else:
             speech_output = speech_output + "Sorry, that's the wrong answer! " + "Right answer is " + answer
     should_end_session = False
@@ -161,24 +172,32 @@ def check_this_word(intent, session):
     should_end_session = False
     card_title = intent['name']
     if(checkQueue.empty()):
-        speech_output = speech_output + "You have already said all the words correctly"
+        speech_output = speech_output + "You have already said all the words correctly. "
         for element in memoryList:
             checkQueue.put(element)
     elif 'Word' in intent['slots']:
         correct_word = checkQueue.get()
         current_word = intent['slots']['Word']['value']
         if(current_word == correct_word):
-            speech_output = speech_output + "Correct, Go on. "
+            speech_output = speech_output + "Correct. "
             if(checkQueue.empty()):
-                speech_output = speech_output + "You have said all the words correctly. This statement reminds you of which city? "
+                scoreNow = scoreQueue.get()
+                scoreNow = scoreNow + 1
+                scoreQueue.put(scoreNow)
+                speech_output = speech_output + "You have said all the words correctly. " + \
+                "Your score is now " + str(scoreNow) + " . " + \
+                "This statement reminds you of which city? "
                 qst_no = random.randint(0,len(memoryList)-1)
                 if(qst_no%1==0):
-                    speech_output = speech_output +  countryDetails[memoryList[qst_no]]
+                    speech_output = speech_output +  countryDetails[memoryList[qst_no]] + " . "
                     answerQueue.put(memoryList[qst_no])
+                    speech_output = speech_output + "Begin your answer with My answer is . "
                 for element in memoryList:
                     checkQueue.put(element)
+            else:
+                speech_output = speech_output + "Go on. "
         else:
-            speech_output = speech_output + "Incorrect. Game ended witha score" + str(len(memoryList)) + ". "
+            speech_output = speech_output + "Incorrect. Correct answer is " + correct_word + " Game ended with a score" + str(len(memoryList)) + ". "
             should_end_session = True
     else:
         speech_output = speech_output + "Word unchecked"
