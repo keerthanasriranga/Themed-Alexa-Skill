@@ -15,6 +15,7 @@ import Queue
 memoryList = []
 checkQueue = Queue.Queue(maxsize=20)
 flag = 0
+answerQueue = Queue.Queue(maxsize=20)
 
 countryDetails = {
     "Delhi" : "Capital of India.",
@@ -28,8 +29,8 @@ countryDetails = {
 countryList = [
     "Delhi",
     "Mumbai",
-    "Mysore",
     "Bangalore",
+    "Mysore",
     "Chennai"
 ]
 
@@ -119,7 +120,7 @@ def set_color_in_session(intent, session):
         for element in memoryList:
             speech_output = speech_output + element + ","
         alexa_word = countryList[random.randint(0,len(countryList)-1)]
-        speech_output = speech_output + " and " + alexa_word +"."
+        speech_output = speech_output + " and " + alexa_word +". Fact about this city : "
         speech_output = speech_output + countryDetails[alexa_word]
         memoryList.append(alexa_word)
         checkQueue.put(alexa_word)
@@ -141,7 +142,14 @@ def get_list_prompt(intent, session):
 def check_answer(intent, session):
     session_attributes = {}
     reprompt_text = None
-    speech_output = "Correct Answer"
+    speech_output = "Checking Answer. "
+    answer = answerQueue.get()
+    if 'Word' in intent['slots']:
+        players_answer = intent['slots']['Word']['value']
+        if(players_answer==answer):
+            speech_output = speech_output + "That's the right answer!"
+        else:
+            speech_output = speech_output + "Sorry, that's the wrong answer! " + "Right answer is " + answer
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
         intent['name'], speech_output, reprompt_text, should_end_session))
@@ -161,16 +169,17 @@ def check_this_word(intent, session):
         current_word = intent['slots']['Word']['value']
         if(current_word == correct_word):
             speech_output = speech_output + "Correct, Go on. "
+            if(checkQueue.empty()):
+                speech_output = speech_output + "You have said all the words correctly. This statement reminds you of which city? "
+                qst_no = random.randint(0,len(memoryList)-1)
+                if(qst_no%1==0):
+                    speech_output = speech_output +  countryDetails[memoryList[qst_no]]
+                    answerQueue.put(memoryList[qst_no])
+                for element in memoryList:
+                    checkQueue.put(element)
         else:
             speech_output = speech_output + "Incorrect. Game ended witha score" + str(len(memoryList)) + ". "
             should_end_session = True
-        if(checkQueue.empty()):
-            speech_output = speech_output + "You have said all the words correctly."
-            qst_no = random.randint(0,len(memoryList)-1)
-            if(qst_no%1==0):
-                speech_output = speech_output +  countryDetails[memoryList[qst_no]]
-            for element in memoryList:
-                checkQueue.put(element)
     else:
         speech_output = speech_output + "Word unchecked"
     return build_response(session_attributes, build_speechlet_response(
