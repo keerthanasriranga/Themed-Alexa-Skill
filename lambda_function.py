@@ -24,15 +24,21 @@ countryDetails = {
                   "It is the world's second most bird-rich capital city after Nairobi in Kenya.",
     "Mumbai" : "This city was given away by the Portuguese to England when King Charles II of England married Princess Catherine de Braganza of Portugal.", 
     "Hyderabad" : "This city, which is also known as the city of pearls, is home to the world famous Biriyani, world's biggest monolithic Buddha statue, film studio and snow themed park, and the rarest of rare - Kohinoor diamond!" + 
-                  " It is considered as one of the oldest rock formations on the planet, around 2500 million years old, and boasts of an opulent heritage. The last Nizam of Hyderabad is considered to be the all time richest Indian; he had a diamond paperweight worth 50 million pounds!! " ,
-    "Mysore"    : "Palace capital of Karnataka. ",
-    "Bangalore" : "IT Capital of India. ",
+                  " It is considered as one of the oldest rock formations on the planet, around 2500 million years old, and boasts of an opulent heritage." ,
+    "Mysore"    : " Once, a capital of the Princely State, the city maintains its royal charm till today. Also, first city to undertake planned developement in Asi",
+    "Bangalore" : "Founded by Kempe Gowda of Vijayanagara empire, this comparatively younger city has many sobriquets like 'The Silicon Valley of India', 'The Garden City of India' etc. " +
+                    " It's not just cats and dogs, here, you could also see raining engineers! The IT hub has the highest percentage of engineers in the world and houses 212 software companies in its heart.",
     "Ahmedabad" : "Gets its name from Ahmedshah Badshah who ruled the city in the 14th Century. Has been ruled by  Mughals, Marathas and  British empire before Independence. ",
     "Kolkota"   : "It was this city which was India's capital till 1912!? This city is one of the few rail tram cities in the world. " + 
                   "It is also a heaven for bookworms with this city's book fair being recognised as one of the world's largest conglomeration of books and is also the most-attended book fair in the world! ",
     "Pune"      : "Pune lies in earthquake prone region. Renowned for its educational institutes, it is called Oxford Of The East. " + 
                   " It was once the base of the Peshwas (prime ministers) of the Maratha Empire, which lasted from 1674 to 1818. ",
-    "Chennai" : "Capital of Tamil Nadu. "
+    "Surat"     : "The East India Company started docking in here from 1608 for trade. The port city is situated on the banks of Tapi river. Known for diamonds. ninety percent of the world's rough cut diamonds are polished and cut here. ",
+    "Kanpur"    : " The cities name is derived from Karnapur, which means Karna town who was one of the characters from Mahabharata. Known as Manchester Of The East due to its large textile factories.",
+    "Jaipur"    : "The city was painted pink under the rule of Sawai Ram Singh to welcome Prince Edward of Wales. This city holds worlds world's larg literary festival. ",
+    "Lucknow"   : "Is famous for its embroidery work called Chikankari. The Awadhi cuisine of this city has a unique place in the history of Indian cuisine.",
+    "Nagpur"    : "This city is known as Orange City. The city was founded by Bakht Buland Shah and later became part of Maratha Empire under Bhonsale dynasty. ",
+    "Indore"    : "This city is the largest consumer of Poha in the world. One of the 100 cities to be developed as part of Smart Cities Mission."
 }
 
 
@@ -45,7 +51,12 @@ countryList = [
     "Ahmedabad",
     "Kolkata",
     "Pune",
-    "Chennai"
+    "Surat",
+    "Kanpur",
+    "Jaipur",
+    "Lucknow",
+    "Nagpur",
+    "Indore"
 ]
 
 # --------------- Helpers that build all of the responses ----------------------
@@ -138,7 +149,7 @@ def set_color_in_session(intent, session):
             alexa_word = countryList[random.randint(0,len(countryList)-1)]
             if alexa_word not in memoryList :
                 break
-        speech_output = speech_output + " and " + alexa_word +". Fact about this city : "
+        speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
         speech_output = speech_output + countryDetails[alexa_word] 
         speech_output = speech_output + "Now repeat the list of words. "
         memoryList.append(alexa_word)
