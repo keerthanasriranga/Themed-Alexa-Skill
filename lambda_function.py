@@ -136,25 +136,29 @@ def set_color_in_session(intent, session):
 
     if 'Word' in intent['slots']:
         players_word = intent['slots']['Word']['value']
-        memoryList.append(players_word)
-        checkQueue.put(players_word)
-        session_attributes = create_favorite_color_attributes(players_word)
-        speech_output = "I now know your word is " + \
-                        players_word + \
-                        ". " + \
-                        "The list of words are "
-        for element in memoryList:
-            speech_output = speech_output + element + ","
-        while True : 
-            alexa_word = countryList[random.randint(0,len(countryList)-1)]
-            if alexa_word not in memoryList :
-                break
-        speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
-        speech_output = speech_output + countryDetails[alexa_word] 
-        speech_output = speech_output + "Now repeat the list of words. "
-        memoryList.append(alexa_word)
-        checkQueue.put(alexa_word)
-        reprompt_text = None
+        if players_word not in memoryList : 
+            memoryList.append(players_word)
+            checkQueue.put(players_word)
+            session_attributes = create_favorite_color_attributes(players_word)
+            speech_output = "I now know your word is " + \
+                            players_word + \
+                            ". " + \
+                            "The list of words are "
+            for element in memoryList:
+                speech_output = speech_output + element + ","
+            while True : 
+                alexa_word = countryList[random.randint(0,len(countryList)-1)]
+                if alexa_word not in memoryList :
+                    break
+            speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
+            speech_output = speech_output + countryDetails[alexa_word] 
+            speech_output = speech_output + "Now repeat the list of words. "
+            memoryList.append(alexa_word)
+            checkQueue.put(alexa_word)
+            reprompt_text = None
+        else:
+            speech_output = "Word already used. "
+            reprompt_text = None
     else:
         speech_output = "Error"
         reprompt_text = None
