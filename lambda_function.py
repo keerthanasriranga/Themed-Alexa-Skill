@@ -19,7 +19,7 @@ answerQueue = Queue.Queue(maxsize=2)
 scoreQueue = Queue.Queue(maxsize=2)
 
 
-countryDetails = {
+cityDetails = {
     "Delhi"     : "The national capital of our country was, originally, a walled city! This city had 14 gates of which only 5 are remaining namely Turkman Gate, Ajmeri Gate, Delhi Gate, Lahori Gate, and Kashmiri Gate. " +
                   "It is the world's second most bird-rich capital city after Nairobi in Kenya. ",
     "Mumbai" : "This city was given away by the Portuguese to England when King Charles II of England married Princess Catherine de Braganza of Portugal. ", 
@@ -41,7 +41,7 @@ countryDetails = {
 }
 
 
-countryList = [
+cityList = [
     "Delhi",
     "Mumbai",
     "Hyderabad",
@@ -146,16 +146,16 @@ def set_word_in_session(intent, session):
                             "The list of words are "
             for element in memoryList:
                 speech_output = speech_output + element + ","
-            if(len(countryList)==len(memoryList)):
+            if(len(cityList)==len(memoryList)):
                 speech_output = speech_output + "You have learnt all the cities I know about. "
                 should_end_session = True
             else : 
                 while True : 
-                    alexa_word = countryList[random.randint(0,len(countryList)-1)]
+                    alexa_word = cityList[random.randint(0,len(cityList)-1)]
                     if alexa_word not in memoryList :
                         break
                 speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
-                speech_output = speech_output + countryDetails[alexa_word] 
+                speech_output = speech_output + cityDetails[alexa_word] 
                 speech_output = speech_output + "Now repeat the list of words. "
                 memoryList.append(alexa_word)
                 checkQueue.put(alexa_word)
@@ -163,7 +163,7 @@ def set_word_in_session(intent, session):
         else:
             speech_output = "Word already used. "
             reprompt_text = None
-            if(len(countryList)==len(memoryList)):
+            if(len(cityList)==len(memoryList)):
                 speech_output = speech_output + "You have learnt all the cities I know about. "
                 should_end_session = True
             
@@ -227,7 +227,7 @@ def check_this_word(intent, session):
                 "This statement reminds you of which city? "
                 qst_no = random.randint(0,len(memoryList)-1)
                 if(qst_no%1==0):
-                    speech_output = speech_output +  countryDetails[memoryList[qst_no]] + " . "
+                    speech_output = speech_output +  cityDetails[memoryList[qst_no]] + " . "
                     answerQueue.put(memoryList[qst_no])
                     speech_output = speech_output + "Begin your answer with My answer is . "
                 for element in memoryList:
