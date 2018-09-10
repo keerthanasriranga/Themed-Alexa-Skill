@@ -25,7 +25,6 @@ cityDetails = {
     "Mumbai" : "This city was given away by the Portuguese to England when King Charles II of England married Princess Catherine de Braganza of Portugal. ", 
     "Hyderabad" : "This city, which is also known as the city of pearls, is home to the world famous Biriyani, world's biggest monolithic Buddha statue, film studio and snow themed park, and the rarest of rare - Kohinoor diamond!" + 
                   " It is considered as one of the oldest rock formations on the planet, around 2500 million years old, and boasts of an opulent heritage. " ,
-    "Mysore"    : " Once, a capital of the Princely State, the city maintains its royal charm till today. Also, first city to undertake planned developement in Asi",
     "Bangalore" : "Founded by Kempe Gowda of Vijayanagara empire, this comparatively younger city has many sobriquets like 'The Silicon Valley of India', 'The Garden City of India' etc. " +
                     " It's not just cats and dogs, here, you could also see raining engineers! The IT hub has the highest percentage of engineers in the world and houses 212 software companies in its heart.",
     "Ahmedabad" : "Gets its name from Ahmedshah Badshah who ruled the city in the 14th Century. Has been ruled by  Mughals, Marathas and  British empire before Independence. ",
@@ -45,7 +44,6 @@ cityList = [
     "Delhi",
     "Mumbai",
     "Hyderabad",
-    "Mysore",
     "Bangalore",
     "Ahmedabad",
     "Kolkata",
@@ -136,36 +134,39 @@ def set_word_in_session(intent, session):
 
     if 'Word' in intent['slots']:
         players_word = intent['slots']['Word']['value']
-        if players_word not in memoryList : 
-            memoryList.append(players_word)
-            checkQueue.put(players_word)
-            session_attributes = create_word_attributes(players_word)
-            speech_output = "I now know your word is " + \
-                            players_word + \
-                            ". " + \
-                            "The list of words are "
-            for element in memoryList:
-                speech_output = speech_output + element + ","
-            if(len(cityList)==len(memoryList)):
-                speech_output = speech_output + "You have learnt all the cities I know about. "
-                should_end_session = True
-            else : 
-                while True : 
-                    alexa_word = cityList[random.randint(0,len(cityList)-1)]
-                    if alexa_word not in memoryList :
-                        break
-                speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
-                speech_output = speech_output + cityDetails[alexa_word] 
-                speech_output = speech_output + "Now repeat the list of words. "
-                memoryList.append(alexa_word)
-                checkQueue.put(alexa_word)
+        if players_word not in cityList :
+            speech_output = "I do not know this city. Please name another city. "
+        else : 
+            if players_word not in memoryList : 
+                memoryList.append(players_word)
+                checkQueue.put(players_word)
+                session_attributes = create_word_attributes(players_word)
+                speech_output = "I now know your word is " + \
+                                players_word + \
+                                ". " + \
+                                "The list of words are "
+                for element in memoryList:
+                    speech_output = speech_output + element + ","
+                if(len(cityList)==len(memoryList)):
+                    speech_output = speech_output + "You have learnt all the cities I know about. "
+                    should_end_session = True
+                else : 
+                    while True : 
+                        alexa_word = cityList[random.randint(0,len(cityList)-1)]
+                        if alexa_word not in memoryList :
+                            break
+                    speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
+                    speech_output = speech_output + cityDetails[alexa_word] 
+                    speech_output = speech_output + "Now repeat the list of words. "
+                    memoryList.append(alexa_word)
+                    checkQueue.put(alexa_word)
+                    reprompt_text = None
+            else:
+                speech_output = "Word already used. "
                 reprompt_text = None
-        else:
-            speech_output = "Word already used. "
-            reprompt_text = None
-            if(len(cityList)==len(memoryList)):
-                speech_output = speech_output + "You have learnt all the cities I know about. "
-                should_end_session = True
+                if(len(cityList)==len(memoryList)):
+                    speech_output = speech_output + "You have learnt all the cities I know about. "
+                    should_end_session = True
             
     else:
         speech_output = "Error"
