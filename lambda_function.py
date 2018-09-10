@@ -20,11 +20,11 @@ scoreQueue = Queue.Queue(maxsize=2)
 
 
 countryDetails = {
-    "Delhi"     : "The national capital of our country was, originally, a walled city! This city had 14 gates of which only 5 are remaining namely Turkman Gate, Ajmeri Gate, Delhi Gate, Lahori Gate, and Kashmiri Gate." +
-                  "It is the world's second most bird-rich capital city after Nairobi in Kenya.",
-    "Mumbai" : "This city was given away by the Portuguese to England when King Charles II of England married Princess Catherine de Braganza of Portugal.", 
+    "Delhi"     : "The national capital of our country was, originally, a walled city! This city had 14 gates of which only 5 are remaining namely Turkman Gate, Ajmeri Gate, Delhi Gate, Lahori Gate, and Kashmiri Gate. " +
+                  "It is the world's second most bird-rich capital city after Nairobi in Kenya. ",
+    "Mumbai" : "This city was given away by the Portuguese to England when King Charles II of England married Princess Catherine de Braganza of Portugal. ", 
     "Hyderabad" : "This city, which is also known as the city of pearls, is home to the world famous Biriyani, world's biggest monolithic Buddha statue, film studio and snow themed park, and the rarest of rare - Kohinoor diamond!" + 
-                  " It is considered as one of the oldest rock formations on the planet, around 2500 million years old, and boasts of an opulent heritage." ,
+                  " It is considered as one of the oldest rock formations on the planet, around 2500 million years old, and boasts of an opulent heritage. " ,
     "Mysore"    : " Once, a capital of the Princely State, the city maintains its royal charm till today. Also, first city to undertake planned developement in Asi",
     "Bangalore" : "Founded by Kempe Gowda of Vijayanagara empire, this comparatively younger city has many sobriquets like 'The Silicon Valley of India', 'The Garden City of India' etc. " +
                     " It's not just cats and dogs, here, you could also see raining engineers! The IT hub has the highest percentage of engineers in the world and houses 212 software companies in its heart.",
@@ -34,11 +34,11 @@ countryDetails = {
     "Pune"      : "Pune lies in earthquake prone region. Renowned for its educational institutes, it is called Oxford Of The East. " + 
                   " It was once the base of the Peshwas (prime ministers) of the Maratha Empire, which lasted from 1674 to 1818. ",
     "Surat"     : "The East India Company started docking in here from 1608 for trade. The port city is situated on the banks of Tapi river. Known for diamonds. ninety percent of the world's rough cut diamonds are polished and cut here. ",
-    "Kanpur"    : " The cities name is derived from Karnapur, which means Karna town who was one of the characters from Mahabharata. Known as Manchester Of The East due to its large textile factories.",
+    "Kanpur"    : " The cities name is derived from Karnapur, which means Karna town who was one of the characters from Mahabharata. Known as Manchester Of The East due to its large textile factories. ",
     "Jaipur"    : "The city was painted pink under the rule of Sawai Ram Singh to welcome Prince Edward of Wales. This city holds worlds world's larg literary festival. ",
-    "Lucknow"   : "Is famous for its embroidery work called Chikankari. The Awadhi cuisine of this city has a unique place in the history of Indian cuisine.",
+    "Lucknow"   : "Is famous for its embroidery work called Chikankari. The Awadhi cuisine of this city has a unique place in the history of Indian cuisine. ",
     "Nagpur"    : "This city is known as Orange City. The city was founded by Bakht Buland Shah and later became part of Maratha Empire under Bhonsale dynasty. ",
-    "Indore"    : "This city is the largest consumer of Poha in the world. One of the 100 cities to be developed as part of Smart Cities Mission."
+    "Indore"    : "This city is the largest consumer of Poha in the world. One of the 100 cities to be developed as part of Smart Cities Mission. "
 }
 
 
@@ -121,8 +121,8 @@ def handle_session_end_request():
         card_title, speech_output, None, should_end_session))
 
 
-def create_favorite_color_attributes(favorite_color):
-    return {"favoriteColor": favorite_color}
+def create_word_attributes(players_word):
+    return {"players_word": players_word}
 
 
 def set_color_in_session(intent, session):
@@ -139,7 +139,7 @@ def set_color_in_session(intent, session):
         if players_word not in memoryList : 
             memoryList.append(players_word)
             checkQueue.put(players_word)
-            session_attributes = create_favorite_color_attributes(players_word)
+            session_attributes = create_word_attributes(players_word)
             speech_output = "I now know your word is " + \
                             players_word + \
                             ". " + \
@@ -178,7 +178,7 @@ def check_answer(intent, session):
     reprompt_text = None
     speech_output = "Checking Answer. "
     answer = answerQueue.get()
-    if 'Word' in intent['slots']:
+    if 'Word' in intent['slots']:      
         players_answer = intent['slots']['Word']['value']
         if(players_answer==answer):
             speech_output = speech_output + "That's the right answer! "
