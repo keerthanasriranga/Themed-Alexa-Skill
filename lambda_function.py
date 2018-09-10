@@ -146,19 +146,27 @@ def set_word_in_session(intent, session):
                             "The list of words are "
             for element in memoryList:
                 speech_output = speech_output + element + ","
-            while True : 
-                alexa_word = countryList[random.randint(0,len(countryList)-1)]
-                if alexa_word not in memoryList :
-                    break
-            speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
-            speech_output = speech_output + countryDetails[alexa_word] 
-            speech_output = speech_output + "Now repeat the list of words. "
-            memoryList.append(alexa_word)
-            checkQueue.put(alexa_word)
-            reprompt_text = None
+            if(len(countryList)==len(memoryList)):
+                speech_output = speech_output + "You have learnt all the cities I know about. "
+                should_end_session = True
+            else : 
+                while True : 
+                    alexa_word = countryList[random.randint(0,len(countryList)-1)]
+                    if alexa_word not in memoryList :
+                        break
+                speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
+                speech_output = speech_output + countryDetails[alexa_word] 
+                speech_output = speech_output + "Now repeat the list of words. "
+                memoryList.append(alexa_word)
+                checkQueue.put(alexa_word)
+                reprompt_text = None
         else:
             speech_output = "Word already used. "
             reprompt_text = None
+            if(len(countryList)==len(memoryList)):
+                speech_output = speech_output + "You have learnt all the cities I know about. "
+                should_end_session = True
+            
     else:
         speech_output = "Error"
         reprompt_text = None
