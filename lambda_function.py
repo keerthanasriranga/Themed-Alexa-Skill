@@ -30,8 +30,6 @@ cityDetails = {
     "Ahmedabad" : "Gets its name from Ahmedshah Badshah who ruled the city in the 14th Century. Has been ruled by  Mughals, Marathas and  British empire before Independence. ",
     "Kolkota"   : "It was this city which was India's capital till 1912!? This city is one of the few rail tram cities in the world. " + 
                   "It is also a heaven for bookworms with this city's book fair being recognised as one of the world's largest conglomeration of books and is also the most-attended book fair in the world! ",
-    "Pune"      : "Pune lies in earthquake prone region. Renowned for its educational institutes, it is called Oxford Of The East. " + 
-                  " It was once the base of the Peshwas (prime ministers) of the Maratha Empire, which lasted from 1674 to 1818. ",
     "Surat"     : "The East India Company started docking in here from 1608 for trade. The port city is situated on the banks of Tapi river. Known for diamonds. ninety percent of the world's rough cut diamonds are polished and cut here. ",
     "Jaipur"    : "The city was painted pink under the rule of Sawai Ram Singh to welcome Prince Edward of Wales. This city holds worlds world's larg literary festival. ",
     "Lucknow"   : "Is famous for its embroidery work called Chikankari. The Awadhi cuisine of this city has a unique place in the history of Indian cuisine. ",
@@ -47,7 +45,6 @@ cityList = [
     "Bangalore",
     "Ahmedabad",
     "Kolkata",
-    "Pune",
     "Surat",
     "Jaipur",
     "Lucknow",
@@ -110,10 +107,17 @@ def get_welcome_response():
 
 def handle_session_end_request():
     card_title = "Session Ended"
-    speech_output = "Thank you for trying the Alexa Skills Kit sample. " \
+    speech_output = "Thank you for playing the Memory Game. " \
                     "Have a nice day! "
     # Setting this to true ends the session and exits the skill.
     should_end_session = True
+    '''for element in memoryList :
+        memoryList.remove(element)
+    while True:
+        if checkQueue.empty() :
+            break
+        removed_element = checkQueue.get()
+    '''
     reprompt_text = speech_output
     return build_response({}, build_speechlet_response(
         card_title, speech_output, None, should_end_session))
@@ -171,6 +175,49 @@ def set_word_in_session(intent, session):
     else:
         speech_output = "Error"
         reprompt_text = None
+    reprompt_text = speech_output
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+        
+def make_user_word(intent, session):
+    """ Sets the color in the session and prepares the speech to reply to the
+    user.
+    """
+
+    card_title = intent['name']
+    session_attributes = {}
+    should_end_session = False
+
+    if(len(cityList)==len(memoryList)):
+        speech_output = speech_output + "You have learnt all the cities I know about. "
+        should_end_session = True
+    else : 
+        while True : 
+            player_alexa_word = cityList[random.randint(0,len(cityList)-1)]
+            if player_alexa_word not in memoryList :
+                            break
+    speech_output = "Your word is " + player_alexa_word + ". "
+    memoryList.append(player_alexa_word)
+    checkQueue.put(player_alexa_word)
+    speech_output = "I now know your word is " + \
+                                player_alexa_word + \
+                                ". " + \
+                                "The list of words are "
+    for element in memoryList:
+        speech_output = speech_output + element + ","
+    if(len(cityList)==len(memoryList)):
+        speech_output = speech_output + "You have learnt all the cities I know about. "
+        should_end_session = True
+    else : 
+        while True : 
+            alexa_word = cityList[random.randint(0,len(cityList)-1)]
+            if alexa_word not in memoryList :
+                break
+        speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
+        speech_output = speech_output + cityDetails[alexa_word] 
+        speech_output = speech_output + "Now repeat the list of words. "
+        memoryList.append(alexa_word)
+        checkQueue.put(alexa_word)
     reprompt_text = speech_output
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
@@ -238,6 +285,8 @@ def check_this_word(intent, session):
         else:
             speech_output = speech_output + "Incorrect. Correct answer is " + correct_word + " Game ended with a score" + str(len(memoryList)) + ". "
             should_end_session = True
+            handle_session_end_request()
+            
     else:
         speech_output = speech_output + "Word unchecked"
     reprompt_text = speech_output
@@ -283,7 +332,7 @@ def on_intent(intent_request, session):
     elif intent_name == "WordFromMemoryIntent":
         return check_this_word(intent, session)
     elif intent_name == "AMAZON.HelpIntent":
-        return get_welcome_response()
+        return make_user_word(intent, session)
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
         return handle_session_end_request()
     else:
