@@ -34,7 +34,6 @@ countryDetails = {
     "Pune"      : "Pune lies in earthquake prone region. Renowned for its educational institutes, it is called Oxford Of The East. " + 
                   " It was once the base of the Peshwas (prime ministers) of the Maratha Empire, which lasted from 1674 to 1818. ",
     "Surat"     : "The East India Company started docking in here from 1608 for trade. The port city is situated on the banks of Tapi river. Known for diamonds. ninety percent of the world's rough cut diamonds are polished and cut here. ",
-    "Kanpur"    : " The cities name is derived from Karnapur, which means Karna town who was one of the characters from Mahabharata. Known as Manchester Of The East due to its large textile factories. ",
     "Jaipur"    : "The city was painted pink under the rule of Sawai Ram Singh to welcome Prince Edward of Wales. This city holds worlds world's larg literary festival. ",
     "Lucknow"   : "Is famous for its embroidery work called Chikankari. The Awadhi cuisine of this city has a unique place in the history of Indian cuisine. ",
     "Nagpur"    : "This city is known as Orange City. The city was founded by Bakht Buland Shah and later became part of Maratha Empire under Bhonsale dynasty. ",
@@ -52,7 +51,6 @@ countryList = [
     "Kolkata",
     "Pune",
     "Surat",
-    "Kanpur",
     "Jaipur",
     "Lucknow",
     "Nagpur",
@@ -107,6 +105,7 @@ def get_welcome_response():
     memoryList = []
     flag = 1
     scoreQueue.put(0)
+    reprompt_text = speech_output
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
@@ -117,6 +116,7 @@ def handle_session_end_request():
                     "Have a nice day! "
     # Setting this to true ends the session and exits the skill.
     should_end_session = True
+    reprompt_text = speech_output
     return build_response({}, build_speechlet_response(
         card_title, speech_output, None, should_end_session))
 
@@ -125,7 +125,7 @@ def create_word_attributes(players_word):
     return {"players_word": players_word}
 
 
-def set_color_in_session(intent, session):
+def set_word_in_session(intent, session):
     """ Sets the color in the session and prepares the speech to reply to the
     user.
     """
@@ -162,13 +162,14 @@ def set_color_in_session(intent, session):
     else:
         speech_output = "Error"
         reprompt_text = None
+    reprompt_text = speech_output
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
 
 def get_list_prompt(intent, session):
     session_attributes = {}
-    reprompt_text = None
     speech_output = "Go on"
+    reprompt_text = speech_output
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
         intent['name'], speech_output, reprompt_text, should_end_session))
@@ -190,6 +191,7 @@ def check_answer(intent, session):
         else:
             speech_output = speech_output + "Sorry, that's the wrong answer! " + "Right answer is " + answer
     should_end_session = False
+    reprompt_text = speech_output
     return build_response(session_attributes, build_speechlet_response(
         intent['name'], speech_output, reprompt_text, should_end_session))
         
@@ -229,6 +231,7 @@ def check_this_word(intent, session):
             should_end_session = True
     else:
         speech_output = speech_output + "Word unchecked"
+    reprompt_text = speech_output
     return build_response(session_attributes, build_speechlet_response(
         intent['name'], speech_output, reprompt_text, should_end_session))
     
@@ -263,7 +266,7 @@ def on_intent(intent_request, session):
 
     # Dispatch to your skill's intent handlers
     if intent_name == "MyWordIsIntent":
-        return set_color_in_session(intent, session)
+        return set_word_in_session(intent, session)
     elif intent_name == "TheListIsIntent":
         return get_list_prompt(intent, session)
     elif intent_name == "MyAnswerIsIntent":
