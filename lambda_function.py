@@ -1,10 +1,9 @@
 """
-This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
-The Intent Schema, Custom Slots, and Sample Utterances for this skill, as well
-as testing instructions are located at http://amzn.to/1LzFrj6
-
-For additional samples, visit the Alexa Skills Kit Getting Started guide at
-http://amzn.to/1LGWsLG
+This is a game that not only enriches your memory but also teaches you about the rich history of various Indian cities.
+Begin by saying an Indian city, and alexa will add another Indian city and also tell you a fact about it. Each time you say a new word, you must repeat the previous word in order. 
+You get a point for saying the list of cities n the right order in each round. 
+Randomly, alexa could also state a fact about a city and ask you the corresponding city name. On giving the right answer, you get awarded 10 bonus points.
+Once you have learnt about all the cities, or get the order of cities wrong, the game ends..
 """
 
 from __future__ import print_function
@@ -92,7 +91,7 @@ def get_welcome_response():
    
     session_attributes = {}
     card_title = "Welcome"
-    speech_output = "Welcome to the Alexa Memory Game. Begin the game by saying My word is and an Indian city name. For example, my word is Bangalore. " 
+    speech_output = "Welcome to Indialogy. Let's learn a few things about India today. Begin the game by saying My word is and an Indian city name. For example, my word is Bangalore. " 
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
     reprompt_text = ""
@@ -107,7 +106,7 @@ def get_welcome_response():
 
 def handle_session_end_request():
     card_title = "Session Ended"
-    speech_output = "Thank you for playing the Memory Game. " \
+    speech_output = "Thanks for your interest in India. " \
                     "Have a nice day! "
     # Setting this to true ends the session and exits the skill.
     should_end_session = True
@@ -128,8 +127,7 @@ def create_word_attributes(players_word):
 
 
 def set_word_in_session(intent, session):
-    """ Sets the color in the session and prepares the speech to reply to the
-    user.
+    """ Alexa acknowledges the user's city and adds nother city to the list with a fact on it
     """
 
     card_title = intent['name']
@@ -180,8 +178,7 @@ def set_word_in_session(intent, session):
         card_title, speech_output, reprompt_text, should_end_session))
         
 def make_user_word(intent, session):
-    """ Sets the color in the session and prepares the speech to reply to the
-    user.
+    """ When the user doesn't know anymore indian city name, and calls for 'help', alexa gives a city name on behalf of the player.
     """
 
     card_title = intent['name']
@@ -199,7 +196,7 @@ def make_user_word(intent, session):
         speech_output = "Your word is " + player_alexa_word + ". "
         memoryList.append(player_alexa_word)
         checkQueue.put(player_alexa_word)
-        speech_output = "I now know your word is " + \
+        speech_output = "Your word is " + \
                                     player_alexa_word + \
                                     ". " + \
                                     "The list of words are "
@@ -223,6 +220,7 @@ def make_user_word(intent, session):
         card_title, speech_output, reprompt_text, should_end_session))
 
 def get_list_prompt(intent, session):
+    ''' Prompts the user to start the list of cities '''
     session_attributes = {}
     speech_output = "Go on"
     reprompt_text = speech_output
@@ -231,6 +229,7 @@ def get_list_prompt(intent, session):
         intent['name'], speech_output, reprompt_text, should_end_session))
         
 def check_answer(intent, session):
+    ''' checks the player's answer to the fact question'''
     session_attributes = {}
     reprompt_text = None
     speech_output = "Checking Answer. "
@@ -252,6 +251,7 @@ def check_answer(intent, session):
         intent['name'], speech_output, reprompt_text, should_end_session))
         
 def check_this_word(intent, session):
+    ''' checks the user word with the list word. If all the words are right, alexa randomly asks a fact about a city '''
     session_attributes = {}
     reprompt_text = None
     speech_output = ""
