@@ -196,28 +196,28 @@ def make_user_word(intent, session):
             player_alexa_word = cityList[random.randint(0,len(cityList)-1)]
             if player_alexa_word not in memoryList :
                             break
-    speech_output = "Your word is " + player_alexa_word + ". "
-    memoryList.append(player_alexa_word)
-    checkQueue.put(player_alexa_word)
-    speech_output = "I now know your word is " + \
-                                player_alexa_word + \
-                                ". " + \
-                                "The list of words are "
-    for element in memoryList:
-        speech_output = speech_output + element + ","
-    if(len(cityList)==len(memoryList)):
-        speech_output = speech_output + "You have learnt all the cities I know about. "
-        should_end_session = True
-    else : 
-        while True : 
-            alexa_word = cityList[random.randint(0,len(cityList)-1)]
-            if alexa_word not in memoryList :
-                break
-        speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
-        speech_output = speech_output + cityDetails[alexa_word] 
-        speech_output = speech_output + "Now repeat the list of words. "
-        memoryList.append(alexa_word)
-        checkQueue.put(alexa_word)
+        speech_output = "Your word is " + player_alexa_word + ". "
+        memoryList.append(player_alexa_word)
+        checkQueue.put(player_alexa_word)
+        speech_output = "I now know your word is " + \
+                                    player_alexa_word + \
+                                    ". " + \
+                                    "The list of words are "
+        for element in memoryList:
+            speech_output = speech_output + element + ","
+        if(len(cityList)==len(memoryList)):
+            speech_output = speech_output + "You have learnt all the cities I know about. "
+            should_end_session = True
+        else : 
+            while True : 
+                alexa_word = cityList[random.randint(0,len(cityList)-1)]
+                if alexa_word not in memoryList :
+                    break
+            speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
+            speech_output = speech_output + cityDetails[alexa_word] 
+            speech_output = speech_output + "Now repeat the list of words. "
+            memoryList.append(alexa_word)
+            checkQueue.put(alexa_word)
     reprompt_text = speech_output
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
