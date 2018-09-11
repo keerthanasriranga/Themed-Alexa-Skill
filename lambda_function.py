@@ -3,7 +3,7 @@ This is a game that not only enriches your memory but also teaches you about the
 Begin by saying an Indian city, and alexa will add another Indian city and also tell you a fact about it. Each time you say a new word, you must repeat the previous word in order. 
 You get a point for saying the list of cities n the right order in each round. 
 Randomly, alexa could also state a fact about a city and ask you the corresponding city name. On giving the right answer, you get awarded 10 bonus points.
-Once you have learnt about all the cities, or get the order of cities wrong, the game ends..
+Once you have learnt about all the cities, or get the order of cities wrong, the game ends. If the player does not explicitly end the game, the list of ords get carried to the next game.
 """
 
 from __future__ import print_function
