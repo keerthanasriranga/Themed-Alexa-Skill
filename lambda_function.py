@@ -3,7 +3,7 @@ This is a game that not only enriches your memory but also teaches you about the
 Begin by saying an Indian city, and alexa will add another Indian city and also tell you a fact about it. Each time you say a new word, you must repeat the previous word in order. 
 You get a point for saying the list of cities n the right order in each round. 
 Randomly, alexa could also state a fact about a city and ask you the corresponding city name. On giving the right answer, you get awarded 10 bonus points.
-Once you have learnt about all the cities, or get the order of cities wrong, the game ends. If the player does not explicitly end the game, the list of words get carried to the next game.
+Once you have learnt about all the cities, or get the order of cities wrong, the game ends.If the user does not explicitly end the game, the list of words get carried to the next round.
 """
 
 from __future__ import print_function
@@ -61,8 +61,8 @@ def build_speechlet_response(title, output, reprompt_text, should_end_session):
         },
         'card': {
             'type': 'Simple',
-            'title': "SessionSpeechlet - " + title,
-            'content': "SessionSpeechlet - " + output
+            'title': title,
+            'content': output
         },
         'reprompt': {
             'outputSpeech': {
@@ -164,7 +164,7 @@ def set_word_in_session(intent, session):
                     checkQueue.put(alexa_word)
                     reprompt_text = None
             else:
-                speech_output = "Word already used. "
+                speech_output = "Word already used. Choose another Indian city name. "
                 reprompt_text = None
                 if(len(cityList)==len(memoryList)):
                     speech_output = speech_output + "You have learnt all the cities I know about. "
@@ -222,7 +222,7 @@ def make_user_word(intent, session):
 def get_list_prompt(intent, session):
     ''' Prompts the user to start the list of cities '''
     session_attributes = {}
-    speech_output = "Go on"
+    speech_output = "Go on. List out the words. "
     reprompt_text = speech_output
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
@@ -265,7 +265,7 @@ def check_this_word(intent, session):
         correct_word = checkQueue.get()
         current_word = intent['slots']['Word']['value']
         if(current_word == correct_word):
-            speech_output = speech_output + "Correct. "
+            speech_output = speech_output + "Correct. You have said this city correctly. "
             if(checkQueue.empty()):
                 scoreNow = scoreQueue.get()
                 scoreNow = scoreNow + 1
@@ -281,7 +281,7 @@ def check_this_word(intent, session):
                 for element in memoryList:
                     checkQueue.put(element)
             else:
-                speech_output = speech_output + "Go on. "
+                speech_output = speech_output + "Go on. Tell the next word. "
         else:
             speech_output = speech_output + "Incorrect. Correct answer is " + correct_word + " Game ended with a score" + str(len(memoryList)) + ". "
             should_end_session = True
@@ -290,6 +290,14 @@ def check_this_word(intent, session):
     else:
         speech_output = speech_output + "Word unchecked"
     reprompt_text = speech_output
+    return build_response(session_attributes, build_speechlet_response(
+        intent['name'], speech_output, reprompt_text, should_end_session))
+        
+def handle_help_intent(intent, session) :
+    session_attributes = {}
+    speech_output =  "If it is your chance, give your city name using my city is and the city name. If you don't know any more Indian cities, tell Alexa you don't know any Indian cities"
+    reprompt_text = speech_output
+    should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
         intent['name'], speech_output, reprompt_text, should_end_session))
     
@@ -331,8 +339,10 @@ def on_intent(intent_request, session):
         return check_answer(intent, session)
     elif intent_name == "WordFromMemoryIntent":
         return check_this_word(intent, session)
-    elif intent_name == "AMAZON.HelpIntent":
+    elif intent_name == "DontKnowCityIntent":
         return make_user_word(intent, session)
+    elif intent_name == "AMAZON.HelpIntent":
+        return handle_help_intent(intent, session)
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
         return handle_session_end_request()
     else:
