@@ -135,41 +135,44 @@ def set_word_in_session(intent, session):
     should_end_session = False
 
     if 'Word' in intent['slots']:
-        players_word = intent['slots']['Word']['value']
-        if players_word not in cityList :
-            speech_output = "I do not know this city. Please name another city. "
-        else : 
-            if players_word not in memoryList : 
-                memoryList.append(players_word)
-                checkQueue.put(players_word)
-                session_attributes = create_word_attributes(players_word)
-                speech_output = "I now know your word is " + \
-                                players_word + \
-                                ". " + \
-                                "The list of words are "
-                for element in memoryList:
-                    speech_output = speech_output + element + ","
-                if(len(cityList)==len(memoryList)):
-                    speech_output = speech_output + "You have learnt all the cities I know about. "
-                    should_end_session = True
-                else : 
-                    while True : 
-                        alexa_word = cityList[random.randint(0,len(cityList)-1)]
-                        if alexa_word not in memoryList :
-                            break
-                    speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
-                    speech_output = speech_output + cityDetails[alexa_word] 
-                    speech_output = speech_output + "Now repeat the list of words. "
-                    memoryList.append(alexa_word)
-                    checkQueue.put(alexa_word)
+        if 'value' in intent['slots']['Word']:
+            players_word = intent['slots']['Word']['value']
+            if players_word not in cityList :
+                speech_output = "I do not know this city. Please name another city. "
+            else : 
+                if players_word not in memoryList : 
+                    memoryList.append(players_word)
+                    checkQueue.put(players_word)
+                    session_attributes = create_word_attributes(players_word)
+                    speech_output = "I now know your word is " + \
+                                    players_word + \
+                                    ". " + \
+                                    "The list of words are "
+                    for element in memoryList:
+                        speech_output = speech_output + element + ","
+                    if(len(cityList)==len(memoryList)):
+                        speech_output = speech_output + "You have learnt all the cities I know about. "
+                        should_end_session = True
+                    else : 
+                        while True : 
+                            alexa_word = cityList[random.randint(0,len(cityList)-1)]
+                            if alexa_word not in memoryList :
+                                break
+                        speech_output = speech_output + " and " + alexa_word +". Fact about " + alexa_word + " : "
+                        speech_output = speech_output + cityDetails[alexa_word] 
+                        speech_output = speech_output + "Now repeat the list of words. "
+                        memoryList.append(alexa_word)
+                        checkQueue.put(alexa_word)
+                        reprompt_text = None
+                else:
+                    speech_output = "Word already used. Choose another Indian city name. "
                     reprompt_text = None
-            else:
-                speech_output = "Word already used. Choose another Indian city name. "
-                reprompt_text = None
-                if(len(cityList)==len(memoryList)):
-                    speech_output = speech_output + "You have learnt all the cities I know about. "
-                    should_end_session = True
-            
+                    if(len(cityList)==len(memoryList)):
+                        speech_output = speech_output + "You have learnt all the cities I know about. "
+                        should_end_session = True
+        else:
+            speech_output = "No valid city name said. "
+            reprompt_text = None
     else:
         speech_output = "Error"
         reprompt_text = None
@@ -234,17 +237,20 @@ def check_answer(intent, session):
     reprompt_text = None
     speech_output = "Checking Answer. "
     answer = answerQueue.get()
-    if 'Word' in intent['slots']:      
-        players_answer = intent['slots']['Word']['value']
-        if(players_answer==answer):
-            speech_output = speech_output + "That's the right answer! "
-            scoreNow = scoreQueue.get()
-            scoreNow = scoreNow + 10
-            scoreQueue.put(scoreNow)
-            speech_output = speech_output + "Congrats! You have earned 10 bonus points. Your score is now " + str(scoreNow) + " . "
-            speech_output = speech_output + "Now, tell your word. "
-        else:
-            speech_output = speech_output + "Sorry, that's the wrong answer! " + "Right answer is " + answer
+    if 'Word' in intent['slots']:     
+        if 'value' in intent['slots']['Word']:
+            players_answer = intent['slots']['Word']['value']
+            if(players_answer==answer):
+                speech_output = speech_output + "That's the right answer! "
+                scoreNow = scoreQueue.get()
+                scoreNow = scoreNow + 10
+                scoreQueue.put(scoreNow)
+                speech_output = speech_output + "Congrats! You have earned 10 bonus points. Your score is now " + str(scoreNow) + " . "
+                speech_output = speech_output + "Now, tell your word. "
+            else:
+                speech_output = speech_output + "Sorry, that's the wrong answer! " + "Right answer is " + answer
+        else :
+            speech_output = speech_output + "No valid city name mentioned. "
     should_end_session = False
     reprompt_text = speech_output
     return build_response(session_attributes, build_speechlet_response(
@@ -262,40 +268,43 @@ def check_this_word(intent, session):
         for element in memoryList:
             checkQueue.put(element)
     elif 'Word' in intent['slots']:
-        correct_word = checkQueue.get()
-        current_word = intent['slots']['Word']['value']
-        if(current_word == correct_word):
-            speech_output = speech_output + "Correct. You have said this city correctly. "
-            if(checkQueue.empty()):
-                scoreNow = scoreQueue.get()
-                scoreNow = scoreNow + 1
-                scoreQueue.put(scoreNow)
-                speech_output = speech_output + "You have said all the words correctly. " + \
-                "Your score is now " + str(scoreNow) + " . " + \
-                "This statement reminds you of which city? "
-                qst_no = random.randint(0,len(memoryList)-1)
-                if(qst_no%1==0):
-                    speech_output = speech_output +  cityDetails[memoryList[qst_no]] + " . "
-                    answerQueue.put(memoryList[qst_no])
-                    speech_output = speech_output + "Begin your answer with My answer is . "
-                for element in memoryList:
-                    checkQueue.put(element)
+        if 'value' in intent['slots']['Word']:
+            correct_word = checkQueue.get()
+            current_word = intent['slots']['Word']['value']
+            if(current_word == correct_word):
+                speech_output = speech_output + "Correct. You have said this city correctly. "
+                if(checkQueue.empty()):
+                    scoreNow = scoreQueue.get()
+                    scoreNow = scoreNow + 1
+                    scoreQueue.put(scoreNow)
+                    speech_output = speech_output + "You have said all the words correctly. " + \
+                    "Your score is now " + str(scoreNow) + " . " + \
+                    "This statement reminds you of which city? "
+                    qst_no = random.randint(0,len(memoryList)-1)
+                    if(qst_no%1==0):
+                        speech_output = speech_output +  cityDetails[memoryList[qst_no]] + " . "
+                        answerQueue.put(memoryList[qst_no])
+                        speech_output = speech_output + "Begin your answer with My answer is . "
+                    for element in memoryList:
+                        checkQueue.put(element)
+                else:
+                    speech_output = speech_output + "Go on. Tell the next word. "
             else:
-                speech_output = speech_output + "Go on. Tell the next word. "
-        else:
-            speech_output = speech_output + "Incorrect. Correct answer is " + correct_word + " Game ended with a score" + str(len(memoryList)) + ". "
-            should_end_session = True
-            handle_session_end_request()
+                speech_output = speech_output + "Incorrect. Correct answer is " + correct_word + " Game ended with a score" + str(len(memoryList)) + ". "
+                should_end_session = True
+                handle_session_end_request()
+        else :
+            speech_output = speech_output + "No valid city name mentioned. "
             
     else:
-        speech_output = speech_output + "Word unchecked"
+        speech_output = "Word unchecked"
     reprompt_text = speech_output
     return build_response(session_attributes, build_speechlet_response(
         intent['name'], speech_output, reprompt_text, should_end_session))
         
 def handle_help_intent(intent, session) :
     session_attributes = {}
-    speech_output =  "If it is your chance, give your city name using my city is and the city name. If you don't know any more Indian cities, tell Alexa you don't know any Indian cities"
+    speech_output =  "If it is your chance, give your city name using my city is and the city name. If you don't know any more Indian cities, tell Alexa you don't know any Indian cities. Do you want to end the game? If yes, say end game. "
     reprompt_text = speech_output
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
